@@ -1,81 +1,85 @@
-# Когортный анализ и оценка Retention Rate
+# Cohort Analysis and Retention Rate Evaluation
 
-> Анализ данных пользователей маркетплейса, продающего товары из Бразилии.  
-> Цель: оценить удержание (retention rate) и определить наличие product/market fit.
+> Analysis of user data for a marketplace selling goods from Brazil.  
+> Goal: measure retention rate and assess product/market fit.
 
-## Описание проекта
+## Project Overview
 
-Этот проект направлен на исследование поведения пользователей маркетплейса, предлагающего товары из Бразилии. С помощью **когортного анализа** и расчета **месячного retention rate** мы:
+This project analyzes user behavior on a marketplace offering products from Brazil. Using **cohort analysis** and calculating the **monthly retention rate**, we:
 
-- Изучаем, как часто пользователи возвращаются к покупкам.
-- Оцениваем стабильность и жизнеспособность бизнеса через призму **product/market fit**.
+- Measure how often users return to make repeat purchases.
+- Evaluate business stability and sustainability through the lens of **product/market fit**.
 
-## Задачи
+## Objectives
 
-1. **Оценить месячный retention rate с помощью когортного анализа**
-2. **Выделить когорты по признаку месяцев регистрации**
-3. **Рассчитать долю пользователей, вернувшихся к повторным покупкам в каждом месяце жизни когорты**
-4. **Определить наличие product/market fit**
-5. **На основе динамики retention rate и стабильности притока клиентов сделать вывод о том, насколько продукт отвечает потребностям целевой аудитории**
+1. **Estimate monthly retention rate using cohort analysis**
+2. **Define cohorts based on registration month**
+3. **Calculate the share of users who returned for repeat purchases in each month of the cohort lifecycle**
+4. **Assess whether product/market fit exists**
+5. **Draw conclusions based on retention dynamics and customer acquisition stability**
 
-## Используемые данные
+## Data Used
 
-### Доступные файлы:
+### Available Files:
 
-| Файл | Описание |
-|------|----------|
-| `olist_customers_dataset.csv` | Информация о пользователях |
-| `olist_orders_dataset.csv`    | Таблица заказов |
-| `olist_order_items_dataset.csv` | Детализация товаров в заказах |
+| File | Description |
+|------|-------------|
+| `olist_customers_dataset.csv` | Customer information |
+| `olist_orders_dataset.csv` | Orders table |
+| `olist_order_items_dataset.csv` | Order item details |
 
+---
 
 ### 1. `olist_customers_dataset.csv`
 
-| Поле | Описание |
-|------|----------|
-| `customer_id` | Позаказный идентификатор пользователя |
-| `customer_unique_id` | Уникальный идентификатор пользователя (аналог номера паспорта) |
-| `customer_zip_code_prefix` | Почтовый индекс пользователя |
-| `customer_city` | Город доставки пользователя |
-| `customer_state` | Штат доставки пользователя |
+| Field | Description |
+|-------|-------------|
+| `customer_id` | Per-order customer identifier |
+| `customer_unique_id` | Unique customer identifier (similar to a passport number) |
+| `customer_zip_code_prefix` | Customer ZIP code |
+| `customer_city` | Customer delivery city |
+| `customer_state` | Customer delivery state |
 
+---
 
 ### 2. `olist_orders_dataset.csv`
 
-| Поле | Описание |
-|------|----------|
-| `order_id` | Уникальный идентификатор заказа (номер чека) |
-| `customer_id` | Позаказный идентификатор пользователя |
-| `order_status` | Статус заказа |
-| `order_purchase_timestamp` | Время создания заказа |
-| `order_approved_at` | Время подтверждения оплаты заказа |
-| `order_delivered_carrier_date` | Время передачи заказа в логистическую службу |
-| `order_delivered_customer_date` | Время доставки заказа |
-| `order_estimated_delivery_date` | Обещанная дата доставки |
+| Field | Description |
+|-------|-------------|
+| `order_id` | Unique order identifier (receipt number) |
+| `customer_id` | Per-order customer identifier |
+| `order_status` | Order status |
+| `order_purchase_timestamp` | Order creation timestamp |
+| `order_approved_at` | Payment approval timestamp |
+| `order_delivered_carrier_date` | Date handed over to carrier |
+| `order_delivered_customer_date` | Delivery date to customer |
+| `order_estimated_delivery_date` | Estimated delivery date |
 
+---
 
 ### 3. `olist_order_items_dataset.csv`
 
-| Поле | Описание |
-|------|----------|
-| `order_id` | Уникальный идентификатор заказа (номер чека) |
-| `order_item_id` | Идентификатор товара внутри одного заказа |
-| `product_id` | ID товара (аналог штрихкода) |
-| `seller_id` | ID производителя товара |
-| `shipping_limit_date` | Максимальная дата передачи заказа продавцом для доставки |
-| `price` | Цена за единицу товара |
-| `freight_value` | Стоимость доставки товара |
+| Field | Description |
+|-------|-------------|
+| `order_id` | Unique order identifier (receipt number) |
+| `order_item_id` | Item identifier within the order |
+| `product_id` | Product ID (similar to a barcode) |
+| `seller_id` | Seller ID |
+| `shipping_limit_date` | Seller shipment deadline |
+| `price` | Unit price |
+| `freight_value` | Shipping cost |
 
+---
 
-## Уникальные статусы заказов
+## Unique Order Statuses
 
-В таблице `olist_orders_dataset` встречаются следующие значения `order_status`:
+The `order_status` field in `olist_orders_dataset` contains the following values:
 
-- `created` — создан
-- `approved` — подтверждён
-- `invoiced` — выставлен счёт
-- `processing` — в процессе сборки заказа
-- `shipped` — отгружён со склада
-- `delivered` — доставлен пользователю
-- `unavailable` — заказ отменён по причине недоступности товара
-- `canceled` — отменён
+- `created` — created  
+- `approved` — approved  
+- `invoiced` — invoiced  
+- `processing` — processing  
+- `shipped` — shipped  
+- `delivered` — delivered  
+- `unavailable` — canceled due to product unavailability  
+- `canceled` — canceled  
